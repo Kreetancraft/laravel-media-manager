@@ -3,18 +3,44 @@
 Everything below lives in `config/media.php` after
 `php artisan vendor:publish --tag=media-config`.
 
-## `permission`
+## Authorization
+
+There is no permission key. Removed in 0.2.0: it was a second way to say what
+the policy already says.
+
+The screens authorize `viewAny` / `create` / `update` / `delete` against
+`MediaAttachment`, and `MediaPolicy` maps those to `view-media`, `create-media`,
+`update-media` and `delete-media` — names derived from its own
+`PERMISSION_SUBJECT` constant, so there is nothing to keep in step.
+
+Until any permission exists in the app, the policy treats the library as open.
+To answer differently, replace the policy outright in your own provider:
 
 ```php
-'permission' => 'manage-media',
+Gate::policy(MediaAttachment::class, YourPolicy::class);
 ```
 
-The ability `MediaPolicy` checks. The package names no permission of its own —
-this is the only place it appears.
+## Sidebar link
 
-If your user model cannot answer `can()` — no authorization package installed —
-every authenticated user is allowed. That is deliberate: the library should work
-on a bare Laravel install, not fail closed on a dependency you never asked for.
+Not configurable, and nothing to register. The provider binds an item and tags
+it `admin.navigation`:
+
+```php
+$this->app->bind('media.navigation.items', fn () => [[
+    'label' => __('Media'),
+    'icon' => 'photo',
+    'route' => config('media.routes.names.index', 'admin.media'),
+    'ability' => 'viewAny',
+    'model' => MediaAttachment::class,
+    'sort' => 30,
+]]);
+
+$this->app->tag('media.navigation.items', 'admin.navigation');
+```
+
+Whatever collects that tag renders it. The link is hidden when the policy denies
+`viewAny`, and skipped entirely when `media.routes.register` is false — so it can
+never point at a route that does not exist.
 
 ## `layouts`
 

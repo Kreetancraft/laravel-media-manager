@@ -66,10 +66,17 @@ your Tailwind + Flux theme.
 `config('auth.providers.users.model')`; `MediaPolicy` type-hints
 `Authenticatable`.
 
-**It names no permission of its own.** `MediaPolicy` checks whatever
-`media.permission` says. With no authorization package installed, any
-authenticated user is allowed — the library works on a bare Laravel install
+**It names no permission of its own.** The screens ask the ordinary
+authorization question and `MediaPolicy` answers it. Until permissions exist
+anywhere in the app the library is open — it works on a bare Laravel install
 rather than failing closed on a dependency you never asked for.
+
+**It adds its own sidebar link, without knowing what renders the sidebar.** The
+link is bound and tagged `admin.navigation`; anything collecting that tag picks
+it up. Install it beside
+[laravel-user-management](https://github.com/Kreetancraft/laravel-user-management)
+and a **Media** entry appears in the admin sidebar with nothing declared either
+way. Install it alone and the tag is simply never read.
 
 **Routes are two independent switches.** Serve public assets while replacing the
 admin UI, or the reverse.

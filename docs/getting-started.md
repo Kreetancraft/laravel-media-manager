@@ -45,16 +45,31 @@ yours and inherit your Tailwind + Flux theme. If `media.layouts.admin` points at
 a view that doesn't exist, the gallery will error — that's the one setup step you
 cannot skip.
 
-**A permission (optional).** `MediaPolicy` checks whatever `media.permission`
-names, default `manage-media`. If your user model can't answer `can()` — no
-authorization package installed — every authenticated user is allowed, so the
-library still works out of the box. Create the permission if you want it
-enforced:
+**Permissions (optional).** This package names no permission. Its screens ask
+the ordinary authorization question — `viewAny`, `create`, `update`, `delete` on
+`MediaAttachment` — and `MediaPolicy` answers it. Until any permission exists
+anywhere in your app, the policy treats the library as open, so it works on a
+bare install; it starts enforcing the moment you create permissions.
+
+The abilities are `view-media`, `create-media`, `update-media`, `delete-media`.
+Create them by hand, or install
+[kreetancraft/laravel-user-management](https://github.com/Kreetancraft/laravel-user-management)
+and run one command — it finds this policy on its own, with nothing declared on
+either side:
+
+```bash
+php artisan user-management:sync-permissions
+```
 
 ```php
-Permission::findOrCreate('manage-media', 'web');
-Role::findByName('editor')->givePermissionTo('manage-media');
+Role::findByName('editor')->givePermissionTo('view-media', 'create-media');
 ```
+
+**A sidebar link (automatic).** The package contributes one to the
+`admin.navigation` container tag. If something collects that tag — the user
+management package's sidebar does — a **Media** link appears with the right
+icon, ordering and visibility. Nothing to wire; if nothing collects it, the
+binding is never resolved and costs nothing.
 
 **A root folder.** The gallery creates one on first visit. Nothing to do.
 

@@ -33,6 +33,8 @@ class MediaServiceProvider extends ServiceProvider
         $this->app->bind(MediaContract::class, MediaService::class);
         $this->app->singleton(FolderContract::class, FolderRepository::class);
         $this->app->singleton(MediaItemsContract::class, MediaRepository::class);
+
+        $this->registerNavigation();
     }
 
     public function boot(): void
@@ -54,6 +56,38 @@ class MediaServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([ReconvertWebp::class]);
         }
+    }
+
+    /**
+     * This package's sidebar link, contributed through a container tag.
+     *
+     * The same shape user-management uses for its own links — the one
+     * difference is that the tag is written out rather than referenced as
+     * Navigation::TAG, because naming that class would be a dependency on it.
+     *
+     * Tags are collected at render time, so provider order does not matter, and
+     * a binding nobody collects is never resolved. Install this package alone
+     * and nothing reads the tag; install it beside user-management and the link
+     * appears in the sidebar with nothing declared either way.
+     *
+     * The check is the same policy question routes/web.php asks, so the link
+     * appears exactly when the page behind it is reachable — a permission name
+     * would hide it on an install that has no permissions at all.
+     */
+    protected function registerNavigation(): void
+    {
+        $this->app->bind('media.navigation.items', fn () => [
+            [
+                'label' => __('Media'),
+                'icon' => 'photo',
+                'route' => config('media.routes.names.index', 'admin.media'),
+                'ability' => 'viewAny',
+                'model' => MediaAttachment::class,
+                'sort' => 30,
+            ],
+        ]);
+
+        $this->app->tag('media.navigation.items', 'admin.navigation');
     }
 
     protected function registerConfig(): void
