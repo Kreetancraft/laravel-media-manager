@@ -3,6 +3,7 @@
 namespace Kreetancraft\Media\Livewire\Concerns;
 
 use Flux\Flux;
+use Kreetancraft\Media\Models\MediaAttachment;
 use Kreetancraft\Media\Support\MediaUrl;
 use Livewire\Attributes\On;
 
@@ -49,7 +50,7 @@ trait MediaPickerSelection
 
     public function confirm(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('viewAny', MediaAttachment::class);
 
         $items = $this->mediaItems
             ->findWhereIn($this->selected)
@@ -68,7 +69,7 @@ trait MediaPickerSelection
 
     public function saveDetail(int $mediaId, string $field, $value): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('update', MediaAttachment::class);
 
         $media = $this->mediaItems->find($mediaId);
 

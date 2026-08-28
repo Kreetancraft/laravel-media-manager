@@ -8,6 +8,7 @@ use Kreetancraft\Media\Livewire\Concerns\MediaPickerNavigation;
 use Kreetancraft\Media\Livewire\Concerns\MediaPickerQuery;
 use Kreetancraft\Media\Livewire\Concerns\MediaPickerSelection;
 use Kreetancraft\Media\Livewire\Concerns\MediaPickerState;
+use Kreetancraft\Media\Models\MediaAttachment;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -45,7 +46,7 @@ class MediaPicker extends Component
 
     public function mount(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('viewAny', MediaAttachment::class);
     }
 
     public function updatingSearch(): void

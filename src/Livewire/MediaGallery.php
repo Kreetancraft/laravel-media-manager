@@ -7,6 +7,7 @@ use Kreetancraft\Media\Concerns\HandlesBulkOperations;
 use Kreetancraft\Media\Concerns\HandlesFolderNavigation;
 use Kreetancraft\Media\Concerns\HasMediaPagination;
 use Kreetancraft\Media\Contracts\FolderContract;
+use Kreetancraft\Media\Models\MediaAttachment;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -96,7 +97,7 @@ class MediaGallery extends Component
 
     public function mount(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('viewAny', MediaAttachment::class);
 
         $folders = app(FolderContract::class);
 

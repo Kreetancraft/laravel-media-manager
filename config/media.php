@@ -3,15 +3,39 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Permission
+    | Permissions
     |--------------------------------------------------------------------------
     |
-    | The ability MediaPolicy checks. If your user model cannot answer can()
-    | — no authorization package installed — every authenticated user is
-    | allowed, so the library still works out of the box.
+    | There is nothing to configure here, on purpose.
+    |
+    | MediaPolicy declares its own subject (MediaPolicy::PERMISSION_SUBJECT) and
+    | builds its abilities from it: view-media, create-media, update-media,
+    | delete-media. kreetancraft/laravel-user-management reads that same constant
+    | when it discovers the policy, so both sides agree without a pair of config
+    | keys anyone has to keep in step.
+    |
+    | Create them with:  php artisan user-management:sync-permissions
+    |
+    | Installed on its own, with no permissions anywhere in the application, the
+    | library is open — there is nothing to enforce yet. It starts enforcing the
+    | moment permissions are in use.
     |
     */
-    'permission' => 'manage-media',
+    /*
+    |--------------------------------------------------------------------------
+    | Avatars
+    |--------------------------------------------------------------------------
+    |
+    | Used only when kreetancraft/laravel-user-management points its
+    | `avatar_resolver` at MediaAvatarResolver. The host user model must also
+    | use the HasMediaAttachments trait — without it there is no attachment
+    | relation to read, and the resolver returns null rather than throwing.
+    |
+    */
+    'avatar' => [
+        'collection' => 'avatar',
+        'conversion' => null,
+    ],
 
     /*
     |--------------------------------------------------------------------------

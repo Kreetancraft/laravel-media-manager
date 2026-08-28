@@ -15,6 +15,7 @@ use Kreetancraft\Media\Actions\RenameMediaAction;
 use Kreetancraft\Media\Actions\UploadMediaAction;
 use Kreetancraft\Media\Contracts\FolderContract;
 use Kreetancraft\Media\Contracts\MediaItemsContract;
+use Kreetancraft\Media\Models\MediaAttachment;
 use Kreetancraft\Media\Support\UploadRules;
 use SanderMuller\FluentValidation\FluentRule as Rule;
 use Throwable;
@@ -34,7 +35,7 @@ trait HandlesFolderNavigation
      */
     public function updatedUploads(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('create', MediaAttachment::class);
 
         try {
             $this->validate([
@@ -72,7 +73,7 @@ trait HandlesFolderNavigation
      */
     public function createFolder(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('create', MediaAttachment::class);
 
         $this->validate([
             'newFolderName' => Rule::string()->required()->max(255)->rule(
@@ -136,7 +137,7 @@ trait HandlesFolderNavigation
      */
     public function deleteFolder(int $folderId): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('delete', MediaAttachment::class);
 
         $folder = app(FolderContract::class)->find($folderId);
         if ($folder === null) {
@@ -172,7 +173,7 @@ trait HandlesFolderNavigation
      */
     public function renameFolder(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('update', MediaAttachment::class);
 
         $folder = app(FolderContract::class)->find($this->selectedFolderId);
         if ($folder === null) {
@@ -205,7 +206,7 @@ trait HandlesFolderNavigation
      */
     public function deleteFile(int $mediaId): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('delete', MediaAttachment::class);
 
         $media = app(MediaItemsContract::class)->find($mediaId);
         if ($media !== null) {
@@ -235,7 +236,7 @@ trait HandlesFolderNavigation
      */
     public function renameFile(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('update', MediaAttachment::class);
 
         $media = app(MediaItemsContract::class)->find($this->selectedMediaId);
         if ($media === null) {
@@ -259,7 +260,7 @@ trait HandlesFolderNavigation
      */
     public function moveItem(int $itemId, string $type, int $targetFolderId): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('update', MediaAttachment::class);
 
         if ($type === 'folder') {
             MoveItemsAction::run([$itemId], [], $targetFolderId);

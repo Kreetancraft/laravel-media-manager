@@ -636,6 +636,10 @@
         @endif
     </flux:modal>
 
+    {{-- @script is Livewire-managed: registered once and torn down with the
+         component. The bare listener this replaced was re-added on every full
+         page load, stacking duplicate handlers. --}}
+    @script
     <script>
         document.addEventListener('clipboard-copy', (event) => {
             const text = event.detail?.text ?? '';
@@ -644,6 +648,7 @@
             }
         });
     </script>
+    @endscript
 
 
 

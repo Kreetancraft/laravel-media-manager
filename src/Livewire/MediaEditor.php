@@ -5,6 +5,7 @@ namespace Kreetancraft\Media\Livewire;
 use Flux\Flux;
 use Kreetancraft\Media\Actions\EditMediaAction;
 use Kreetancraft\Media\Contracts\MediaItemsContract;
+use Kreetancraft\Media\Models\MediaAttachment;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -56,7 +57,7 @@ class MediaEditor extends Component
 
     public function mount(int $mediaId): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('viewAny', MediaAttachment::class);
 
         $this->media = app(MediaItemsContract::class)->find($mediaId);
 
@@ -94,7 +95,7 @@ class MediaEditor extends Component
      */
     public function save(array $edits = []): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('update', MediaAttachment::class);
 
         if ($edits === []) {
             $edits = array_filter([

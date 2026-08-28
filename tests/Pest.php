@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Kreetancraft\Media\Policies\MediaPolicy;
 use Kreetancraft\Media\Tests\Fixtures\Models\User;
 use Kreetancraft\Media\Tests\TestCase;
 use LivewireFilemanager\Filemanager\Models\Folder;
@@ -23,10 +24,19 @@ pest()->extend(TestCase::class)
  */
 function seedRolesAndPermissions(): void
 {
-    $ability = (string) config('media.permission', 'manage-media');
+    // Ask the policy which abilities it enforces rather than hardcoding names
+    // the tests would then have to keep in step with it.
+    $policy = new MediaPolicy;
+    $abilities = array_map(
+        fn (string $action) => $policy->ability($action),
+        ['view', 'create', 'update', 'delete'],
+    );
 
-    Permission::findOrCreate($ability, 'web');
-    Role::findOrCreate('media-manager', 'web')->syncPermissions([$ability]);
+    foreach ($abilities as $ability) {
+        Permission::findOrCreate($ability, 'web');
+    }
+
+    Role::findOrCreate('media-manager', 'web')->syncPermissions($abilities);
     Role::findOrCreate('no-access', 'web');
 
     app(PermissionRegistrar::class)->forgetCachedPermissions();

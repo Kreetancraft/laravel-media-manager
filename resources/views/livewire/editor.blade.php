@@ -81,6 +81,10 @@
         </div>
     </div>
 
+    {{-- @assets runs once per page load and survives wire:navigate; a bare
+         <script> does not, which left window.mediaEditor undefined on any
+         second visit to this screen. --}}
+    @assets
     <script>
         window.mediaEditor = function (config) {
             return {
@@ -294,4 +298,5 @@
             };
         };
     </script>
+    @endassets
 </div>

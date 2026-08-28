@@ -27,12 +27,3 @@ test('a role without the permission cannot view the media page', function () {
 
     $this->get(route('admin.media'))->assertForbidden();
 });
-
-test('access follows the configured ability rather than a fixed name', function () {
-    config()->set('media.permission', 'library-admin');
-
-    // Holding only the old ability is no longer enough.
-    actingAsSuperAdmin();
-
-    $this->get(route('admin.media'))->assertForbidden();
-});

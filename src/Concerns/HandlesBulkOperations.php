@@ -6,6 +6,7 @@ use Flux\Flux;
 use Kreetancraft\Media\Actions\DeleteItemsAction;
 use Kreetancraft\Media\Actions\MoveItemsAction;
 use Kreetancraft\Media\Contracts\FolderContract;
+use Kreetancraft\Media\Models\MediaAttachment;
 use SanderMuller\FluentValidation\FluentRule as Rule;
 
 trait HandlesBulkOperations
@@ -48,7 +49,7 @@ trait HandlesBulkOperations
      */
     public function deleteSelected(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('delete', MediaAttachment::class);
 
         if (count($this->selectedFolders) === 0 && count($this->selectedFiles) === 0) {
             return;
@@ -65,7 +66,7 @@ trait HandlesBulkOperations
      */
     public function moveSelected(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('update', MediaAttachment::class);
 
         $this->validate([
             'moveTargetFolderId' => Rule::numeric()->required()->exists('folders', 'id'),

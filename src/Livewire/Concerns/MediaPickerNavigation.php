@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Kreetancraft\Media\Actions\UploadMediaAction;
+use Kreetancraft\Media\Models\MediaAttachment;
 use Kreetancraft\Media\Support\UploadRules;
 use LivewireFilemanager\Filemanager\Models\Folder;
 use Throwable;
@@ -38,7 +39,7 @@ trait MediaPickerNavigation
 
     public function updatedUploads(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('create', MediaAttachment::class);
 
         try {
             $this->validate(UploadRules::forUploads());

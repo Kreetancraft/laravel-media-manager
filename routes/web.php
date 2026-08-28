@@ -3,15 +3,19 @@
 use Illuminate\Support\Facades\Route;
 use Kreetancraft\Media\Livewire\MediaEditor;
 use Kreetancraft\Media\Livewire\MediaGallery;
+use Kreetancraft\Media\Models\MediaAttachment;
 
 /*
- * Prefix and middleware are applied by MediaServiceProvider::registerRoutes()
- * from config, so this file only declares the paths and names.
+ * Prefix and middleware come from config via MediaServiceProvider; this file
+ * only declares paths and names.
+ *
+ * The gate check is the ordinary policy form — ability plus model — not a
+ * permission string. This package names no permissions; whatever policy is bound
+ * to MediaAttachment decides, and a host can replace it wholesale.
  */
 $names = config('media.routes.names', []);
-$ability = config('media.permission', 'manage-media');
 
-Route::middleware("can:{$ability}")->group(function () use ($names): void {
+Route::middleware('can:viewAny,'.MediaAttachment::class)->group(function () use ($names): void {
     Route::get('media', MediaGallery::class)
         ->name($names['index'] ?? 'admin.media');
 

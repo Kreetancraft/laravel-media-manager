@@ -9,6 +9,7 @@ use Kreetancraft\Media\Actions\GenerateAltTextAction;
 use Kreetancraft\Media\Actions\GetMediaUsageAction;
 use Kreetancraft\Media\Actions\UpdateMediaMetadataAction;
 use Kreetancraft\Media\Contracts\MediaItemsContract;
+use Kreetancraft\Media\Models\MediaAttachment;
 use Kreetancraft\Media\Support\UserResolver;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -124,7 +125,7 @@ class MediaDetails extends Component
      */
     public function updatedMetadata(mixed $value, string $key): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('update', MediaAttachment::class);
 
         if ($this->mediaId === null) {
             return;
@@ -140,7 +141,7 @@ class MediaDetails extends Component
 
     public function generateAltText(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('update', MediaAttachment::class);
 
         if ($this->mediaId === null) {
             return;
@@ -212,7 +213,7 @@ class MediaDetails extends Component
 
     public function deleteCurrent(): void
     {
-        $this->authorize('manage-media');
+        $this->authorize('delete', MediaAttachment::class);
 
         if ($this->mediaId === null) {
             return;
