@@ -7,6 +7,7 @@ use Kreetancraft\Media\Concerns\HandlesBulkOperations;
 use Kreetancraft\Media\Concerns\HandlesFolderNavigation;
 use Kreetancraft\Media\Concerns\HasMediaPagination;
 use Kreetancraft\Media\Contracts\FolderContract;
+use Kreetancraft\Media\Layout;
 use Kreetancraft\Media\Models\MediaAttachment;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
@@ -147,6 +148,6 @@ class MediaGallery extends Component
             'files' => $this->getFiles(),
             'uploadedDates' => $this->getUploadedDates(),
             'navigationIds' => $this->getNavigationIds(),
-        ])->layout(config('media.layouts.admin', 'components.layouts.app'));
+        ])->layout(Layout::admin());
     }
 }

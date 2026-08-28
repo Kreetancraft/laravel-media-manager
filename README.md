@@ -57,6 +57,19 @@ an existing library.
 **Public serving** — `/assets/{path}` serves files by exact folder path,
 WordPress-style, with no enumerable listing surface.
 
+## Let Tailwind see this package
+
+Required. Tailwind v4 generates only the classes it finds by scanning files, and
+it does not scan `vendor/`. In `resources/css/app.css`:
+
+```css
+@source '../../vendor/kreetancraft/laravel-media-manager/resources/views';
+```
+
+Skipping it fails confusingly rather than loudly — classes shared with your own
+views still work and only the ones unique to this package go missing, which
+typically shows up as a light filter bar on a dark page.
+
 ## Design decisions worth knowing
 
 **It ships no CSS and no layouts.** Screens render into *your* layout and inherit

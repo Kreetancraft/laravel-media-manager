@@ -104,7 +104,7 @@
             >
                 <flux:icon name="arrow-up-tray" variant="micro" class="mx-auto mb-1 size-5" />
                 <flux:text class="text-xs">{{ __('Drop files here or') }}</flux:text>
-                <label class="cursor-pointer text-xs font-medium text-primary-600 hover:underline dark:text-primary-400">
+                <label class="cursor-pointer text-xs font-medium text-accent-content hover:underline text-accent-content">
                     {{ __('browse to upload') }}
                     <input type="file" multiple class="hidden" x-ref="pickerFile" wire:model="uploads" accept="image/*,application/pdf">
                 </label>
@@ -138,7 +138,7 @@
                         wire:click="toggle({{ $item['id'] }})"
                         @class([
                             'group relative aspect-square overflow-hidden rounded-lg border-2 transition focus:outline-none',
-                            'border-primary-500 ring-2 ring-primary-200 dark:border-primary-400 dark:ring-primary-800' => $this->isSelected($item['id']),
+                            'border-accent ring-2 ring-accent/30' => $this->isSelected($item['id']),
                             'border-transparent hover:border-zinc-300 dark:hover:border-zinc-600' => ! $this->isSelected($item['id']),
                         ])
                     >
@@ -152,7 +152,7 @@
                             </div>
                         @endif
                         @if ($this->isSelected($item['id']))
-                            <span class="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-primary-600 text-white shadow">
+                            <span class="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-accent text-white shadow">
                                 <flux:icon name="check" variant="micro" />
                             </span>
                         @endif

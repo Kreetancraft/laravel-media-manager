@@ -38,6 +38,23 @@ Four Livewire components, registered for you:
 | `<livewire:media.details />` | Metadata panel for one item |
 | `<livewire:media.editor />` | Crop, rotate, flip, brightness, contrast |
 
+## Let Tailwind see this package
+
+**Do this or the screens will look broken.** Tailwind v4 only generates the
+utility classes it finds by scanning files, and it does not scan `vendor/` by
+default. Add this to your `resources/css/app.css`:
+
+```css
+@source '../../vendor/kreetancraft/laravel-media-manager/resources/views';
+```
+
+Then rebuild: `npm run build` (or `npm run dev`).
+
+Skip it and the failure is confusing rather than obvious: classes this package
+shares with your own views still work, and only the ones unique to it go
+missing. The usual symptom is a light-coloured filter bar sitting in a dark
+page — `bg-zinc-50` was generated for your app, `dark:bg-zinc-900/40` was not.
+
 ## Prerequisites the package does not install for you
 
 **A layout.** This package ships no CSS and no layouts. Its screens render into

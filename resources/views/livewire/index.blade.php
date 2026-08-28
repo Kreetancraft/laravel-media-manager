@@ -50,7 +50,7 @@
 >
 
     <flux:breadcrumbs>
-        <flux:breadcrumbs.item href="{{ config('media.routes.names.home', '/') }}" wire:navigate>{{ __('Dashboard') }}</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ \Kreetancraft\Media\Layout::home() }}" wire:navigate>{{ __('Dashboard') }}</flux:breadcrumbs.item>
         <flux:breadcrumbs.item>{{ __('Media') }}</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
@@ -62,9 +62,9 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         class="absolute inset-0 z-40 bg-zinc-950/70 backdrop-blur-sm m-6 rounded-2xl border-4 border-dashed border-primary-500 flex flex-col items-center justify-center text-white pointer-events-none transition duration-200"
+         class="absolute inset-0 z-40 bg-zinc-950/70 backdrop-blur-sm m-6 rounded-2xl border-4 border-dashed border-accent flex flex-col items-center justify-center text-white pointer-events-none transition duration-200"
          x-cloak>
-        <flux:icon name="arrow-up-tray" class="w-16 h-16 text-primary-400 animate-bounce mb-4" />
+        <flux:icon name="arrow-up-tray" class="w-16 h-16 text-accent-content animate-bounce mb-4" />
         <flux:heading size="xl" class="text-white">{{ __('Drop files to upload') }}</flux:heading>
         <flux:subheading class="text-zinc-300 mt-2">{{ __('Upload files directly to the current folder.') }}</flux:subheading>
     </div>
@@ -96,13 +96,13 @@
             <div x-show="uploading"
                  class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-zinc-900/90 dark:bg-zinc-950/95 text-white p-4 rounded-xl shadow-xl border border-zinc-800 backdrop-blur-md transition-all duration-300"
                  x-cloak>
-                <svg class="animate-spin h-5 w-5 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin h-5 w-5 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 <span class="text-sm font-semibold tracking-wide flex items-center gap-1.5">
                     <span>Uploading:</span>
-                    <span class="text-primary-400" x-text="uploadProgress + '%'"></span>
+                    <span class="text-accent-content" x-text="uploadProgress + '%'"></span>
                 </span>
             </div>
         </div>
@@ -116,12 +116,12 @@
             <!-- View Mode Toggles -->
             <div class="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-800 h-9 shrink-0 shadow-sm">
                 <button wire:click="$set('viewMode', 'grid')" 
-                        class="px-2.5 h-full transition flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-700 {{ $viewMode === 'grid' ? 'bg-zinc-100 dark:bg-zinc-700 text-primary-600 dark:text-primary-400 font-semibold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}"
+                        class="px-2.5 h-full transition flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-700 {{ $viewMode === 'grid' ? 'bg-zinc-100 dark:bg-zinc-700 text-accent-content font-semibold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}"
                         title="{{ __('Grid View') }}">
                     <flux:icon name="squares-2x2" class="w-4 h-4" />
                 </button>
                 <button wire:click="$set('viewMode', 'list')" 
-                        class="px-2.5 h-full transition border-l border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-700 {{ $viewMode === 'list' ? 'bg-zinc-100 dark:bg-zinc-700 text-primary-600 dark:text-primary-400 font-semibold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}"
+                        class="px-2.5 h-full transition border-l border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-700 {{ $viewMode === 'list' ? 'bg-zinc-100 dark:bg-zinc-700 text-accent-content font-semibold' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}"
                         title="{{ __('List View') }}">
                     <flux:icon name="list-bullet" class="w-4 h-4" />
                 </button>
@@ -169,7 +169,7 @@
                         {{ $crumb['name'] }}
                     </span>
                 @else
-                    <button wire:click="navigateToFolder({{ $crumb['id'] }})" class="hover:text-primary-600 font-medium transition shrink-0">
+                    <button wire:click="navigateToFolder({{ $crumb['id'] }})" class="hover:text-accent-content font-medium transition shrink-0">
                         {{ $crumb['name'] }}
                     </button>
                 @endif
@@ -180,7 +180,7 @@
         <div class="flex items-center gap-2">
             <!-- Selected Actions -->
             <div x-show="selectedFolders.length > 0 || selectedFiles.length > 0" class="flex items-center gap-2" x-cloak>
-                <span class="text-xs font-semibold bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-400 px-2.5 py-1 rounded-full border border-primary-100 dark:border-primary-900/30">
+                <span class="text-xs font-semibold bg-accent/10 text-accent-content px-2.5 py-1 rounded-full border border-accent/20">
                     <span x-text="(selectedFolders.length + selectedFiles.length) + ' ' + (selectedFolders.length + selectedFiles.length === 1 ? 'item' : 'items') + ' selected'"></span>
                 </span>
 
@@ -241,14 +241,14 @@
                              x-on:dragover.prevent
                              x-on:drop="const data = JSON.parse(event.dataTransfer.getData('text/plain')); $wire.moveItem(data.id, data.type, {{ $folder['id'] }})"
                              class="group relative bg-white dark:bg-zinc-800/50 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 border rounded-xl p-4 flex flex-col justify-between cursor-pointer transition shadow-sm border-zinc-200 dark:border-zinc-800/80"
-                             :class="isFolderSelected({{ $folder['id'] }}) ? 'ring-2 ring-primary-500 border-primary-500 bg-primary-50/5 dark:bg-primary-950/5' : ''"
+                             :class="isFolderSelected({{ $folder['id'] }}) ? 'ring-2 ring-accent border-accent bg-accent/5' : ''"
                              wire:click="navigateToFolder({{ $folder['id'] }})">
                             
                             <!-- Selection Checkbox & Folder Icon -->
                             <div class="flex items-start justify-between mb-3">
                                 <!-- Checkbox Toggle -->
                                 <button x-on:click.prevent.stop="toggleFolder({{ $folder['id'] }})" class="p-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition">
-                                    <flux:icon x-show="isFolderSelected({{ $folder['id'] }})" name="check-circle" class="w-5 h-5 text-primary-500 fill-current" />
+                                    <flux:icon x-show="isFolderSelected({{ $folder['id'] }})" name="check-circle" class="w-5 h-5 text-accent fill-current" />
                                     <div x-show="!isFolderSelected({{ $folder['id'] }})" class="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-600 rounded-full group-hover:border-zinc-400"></div>
                                 </button>
 
@@ -307,7 +307,7 @@
                                     <!-- Checkbox Column -->
                                     <flux:table.cell x-on:click.stop>
                                         <button x-on:click.prevent.stop="toggleFile({{ $file['id'] }})" class="p-1 rounded bg-white dark:bg-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition">
-                                            <flux:icon x-show="isFileSelected({{ $file['id'] }})" name="check-circle" class="w-5 h-5 text-primary-500 fill-current" />
+                                            <flux:icon x-show="isFileSelected({{ $file['id'] }})" name="check-circle" class="w-5 h-5 text-accent fill-current" />
                                             <div x-show="!isFileSelected({{ $file['id'] }})" class="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-600 rounded-full"></div>
                                         </button>
                                     </flux:table.cell>
@@ -391,7 +391,7 @@
                             <div draggable="true"
                                  x-on:dragstart="event.dataTransfer.setData('text/plain', JSON.stringify({type: 'file', id: {{ $file['id'] }}}))"
                                  class="group relative bg-white dark:bg-zinc-800/50 border rounded-xl overflow-hidden cursor-pointer shadow-sm transition flex flex-col justify-between border-zinc-200 dark:border-zinc-800/80"
-                                 :class="isFileSelected({{ $file['id'] }}) ? 'ring-2 ring-primary-500 border-primary-500 bg-primary-50/5 dark:bg-primary-950/5' : ''"
+                                 :class="isFileSelected({{ $file['id'] }}) ? 'ring-2 ring-accent border-accent bg-accent/5' : ''"
                                  x-on:click="$wire.openDetails({{ $file['id'] }})">
                                 
                                 <!-- Thumbnail / Icon Area -->
@@ -423,7 +423,7 @@
                                     <!-- Checkbox Overlays -->
                                     <div class="absolute top-2 left-2 transition duration-200" :class="isFileSelected({{ $file['id'] }}) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'" x-on:click.stop>
                                         <button x-on:click.prevent.stop="toggleFile({{ $file['id'] }})" class="p-1 rounded bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 shadow-sm border border-zinc-200 dark:border-zinc-700 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition">
-                                            <flux:icon x-show="isFileSelected({{ $file['id'] }})" name="check-circle" class="w-5 h-5 text-primary-500 fill-current" />
+                                            <flux:icon x-show="isFileSelected({{ $file['id'] }})" name="check-circle" class="w-5 h-5 text-accent fill-current" />
                                             <div x-show="!isFileSelected({{ $file['id'] }})" class="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-600 rounded-full"></div>
                                         </button>
                                     </div>
@@ -488,12 +488,12 @@
                 x-on:drop.prevent="drag = false; $refs.uploadInput.files = $event.dataTransfer.files; $refs.uploadInput.dispatchEvent(new Event('change'))"
                 class="rounded-xl border-2 border-dashed p-8 text-center transition"
                 :class="drag
-                    ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-950/20'
+                    ? 'border-accent bg-accent/10'
                     : 'border-zinc-300 text-zinc-500 dark:border-zinc-600 dark:text-zinc-400'"
             >
-                <flux:icon name="arrow-up-tray" variant="micro" class="mx-auto mb-2 size-8 text-primary-500" />
+                <flux:icon name="arrow-up-tray" variant="micro" class="mx-auto mb-2 size-8 text-accent" />
                 <flux:text class="text-sm">{{ __('Drag & drop files here, or') }}</flux:text>
-                <label class="cursor-pointer text-sm font-medium text-primary-600 hover:underline dark:text-primary-400">
+                <label class="cursor-pointer text-sm font-medium text-accent-content hover:underline text-accent-content">
                     {{ __('browse to upload') }}
                     <input type="file" multiple class="hidden" x-ref="uploadInput" wire:model="uploads" accept="image/*,application/pdf,.doc,.docx,.txt,.zip,.rar" />
                 </label>

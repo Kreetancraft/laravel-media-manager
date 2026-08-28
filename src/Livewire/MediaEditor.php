@@ -5,6 +5,7 @@ namespace Kreetancraft\Media\Livewire;
 use Flux\Flux;
 use Kreetancraft\Media\Actions\EditMediaAction;
 use Kreetancraft\Media\Contracts\MediaItemsContract;
+use Kreetancraft\Media\Layout;
 use Kreetancraft\Media\Models\MediaAttachment;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -121,6 +122,6 @@ class MediaEditor extends Component
     {
         return view('media::livewire.editor', [
             'sourceUrl' => $this->media->getUrl(),
-        ])->layout(config('media.layouts.admin', 'components.layouts.app'));
+        ])->layout(Layout::admin());
     }
 }

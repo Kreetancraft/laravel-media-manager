@@ -75,11 +75,14 @@ return [
         'asset_prefix' => 'assets',
         'asset_middleware' => ['web'],
 
+        // Where the "Dashboard" breadcrumb points. A route name or a URL —
+        // a route name is better, since it survives the route moving.
+        'home' => 'dashboard',
+
         'names' => [
             'index' => 'admin.media',
             'edit' => 'admin.media.edit',
             'asset' => 'media.asset',
-            'home' => '/',
         ],
     ],
 
