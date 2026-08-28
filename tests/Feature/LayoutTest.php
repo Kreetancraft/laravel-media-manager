@@ -49,3 +49,11 @@ test('a config published before the key moved keeps working', function () {
 
     expect(Layout::home())->toBe('/legacy-admin');
 });
+
+test('a route name that does not exist does not become a relative link', function () {
+    // The default is the `dashboard` route name. An app without one must get the
+    // site root, not href="dashboard" pointing back at the current directory.
+    config()->set('media.routes.home', 'dashboard');
+
+    expect(Layout::home())->toBe('/');
+});

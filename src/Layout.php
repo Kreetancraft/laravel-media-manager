@@ -77,6 +77,15 @@ class Layout
             return '/';
         }
 
-        return Route::has($home) ? route($home) : $home;
+        if (Route::has($home)) {
+            return route($home);
+        }
+
+        // Not a route. Only a real URL or absolute path is safe to emit — a bare
+        // word would render as a relative link, so an app with no `dashboard`
+        // route gets the site root rather than a crumb pointing at itself.
+        return str_starts_with($home, '/') || str_contains($home, '://') || str_starts_with($home, '#')
+            ? $home
+            : '/';
     }
 }
