@@ -40,9 +40,16 @@ return [
     |
     */
     'routes' => [
+        // Admin screens (gallery, editor).
         'register' => true,
         'prefix' => 'admin',
         'middleware' => ['web', 'auth'],
+
+        // Public asset serving. Independent of the admin screens: these URLs
+        // appear on public pages, so they carry no auth.
+        'serve_assets' => true,
+        'asset_prefix' => 'assets',
+        'asset_middleware' => ['web'],
 
         'names' => [
             'index' => 'admin.media',

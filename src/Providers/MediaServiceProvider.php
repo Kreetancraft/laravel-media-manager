@@ -84,20 +84,29 @@ class MediaServiceProvider extends ServiceProvider
     }
 
     /**
-     * Routes are opt-out and fully configurable — prefix, middleware and every
-     * route name. A host that only wants the picker component can turn them off.
+     * Two independent route groups, each opt-out.
+     *
+     * The admin screens and the public asset route are separate switches on
+     * purpose: a host may want its public images served while replacing the
+     * admin UI entirely, or vice versa.
      */
     protected function registerRoutes(): void
     {
-        if (! config('media.routes.register', true)) {
-            return;
+        if (config('media.routes.register', true)) {
+            Route::group([
+                'prefix' => config('media.routes.prefix', 'admin'),
+                'middleware' => config('media.routes.middleware', ['web', 'auth']),
+            ], function (): void {
+                $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+            });
         }
 
-        Route::group([
-            'prefix' => config('media.routes.prefix', 'admin'),
-            'middleware' => config('media.routes.middleware', ['web', 'auth']),
-        ], function (): void {
-            $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
-        });
+        // Public and unauthenticated: these URLs appear on public pages.
+        if (config('media.routes.serve_assets', true)) {
+            Route::middleware(config('media.routes.asset_middleware', ['web']))
+                ->group(function (): void {
+                    $this->loadRoutesFrom(__DIR__.'/../../routes/assets.php');
+                });
+        }
     }
 }

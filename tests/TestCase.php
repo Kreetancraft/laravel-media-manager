@@ -57,13 +57,15 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Host-owned routes this package references by configurable name.
+     *
+     * The asset route is NOT stubbed here: the package registers a real one, and
+     * a stub would shadow it and hide a regression.
      */
     protected function defineRoutes($router): void
     {
         $router->middleware('web')->group(function ($router) {
             $router->get('/', fn () => 'home')->name('home');
             $router->get('/login', fn () => 'login')->name('login');
-            $router->get('/assets/{path}', fn () => 'asset')->where('path', '.*')->name('media.asset');
         });
     }
 

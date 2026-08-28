@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Kreetancraft\Media\Models\MediaAttachment;
+use Kreetancraft\Media\Support\MediaUrl;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Lets any model reference shared library media (Spatie media rows) without
@@ -138,5 +140,34 @@ trait HasMediaAttachments
             'collection' => $collection,
             'fix' => "->with('mediaAttachments.media')",
         ]);
+    }
+
+    /**
+     * The first media item in a collection, or null.
+     */
+    public function firstAttachedMedia(string $collection = 'default'): ?Media
+    {
+        return $this->attachedMedia($collection)->first();
+    }
+
+    /**
+     * Public URL of the first item in a collection, or null when empty.
+     *
+     * The common case — a card thumbnail, an OG image — without every caller
+     * repeating the null dance.
+     */
+    public function attachedUrl(string $collection = 'default', ?string $conversion = null): ?string
+    {
+        $media = $this->firstAttachedMedia($collection);
+
+        return $media ? MediaUrl::publicFor($media, $conversion) : null;
+    }
+
+    /**
+     * Convenience for the conventional `featured` collection.
+     */
+    public function featuredUrl(?string $conversion = null): ?string
+    {
+        return $this->attachedUrl('featured', $conversion);
     }
 }

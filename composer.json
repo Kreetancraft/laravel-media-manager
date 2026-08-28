@@ -1,6 +1,6 @@
 {
-    "name": "kreetancraft/laravel-media",
-    "description": "Media library for Laravel — folders, picker, image editor and automatic WebP conversion. Livewire 4 + Flux UI.",
+    "name": "kreetancraft/laravel-media-manager",
+    "description": "Media manager for Laravel — folders, a drop-in picker, image editor and automatic WebP conversion. Livewire 4 + Flux UI.",
     "keywords": [
         "laravel",
         "livewire",

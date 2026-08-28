@@ -1,134 +1,86 @@
-# kreetancraft/laravel-media
+# kreetancraft/laravel-media-manager
 
-Media library for Laravel — folders, a picker you can drop into any form, an
+Media manager for Laravel — folders, a picker you drop into any form, an
 in-browser image editor, and automatic WebP conversion. **Livewire 4 + Flux UI**,
 built on `spatie/laravel-medialibrary`.
 
 Standalone package. No `nwidart/laravel-modules`, no bundled CSS, no bundled
-layouts.
-
-## Design decisions worth knowing before you install
-
-**It ships no CSS and no layouts.** The gallery and editor render into *your*
-layout and inherit your Tailwind + Flux theme. Set `media.layouts.admin` to
-whatever your app uses.
-
-**It does not care which user model you have.** Uploaders are resolved through
-`config('auth.providers.users.model')`, and `MediaPolicy` type-hints
-`Authenticatable`. There is no dependency on any user package.
-
-**It names no permission of its own.** `MediaPolicy` checks whatever
-`media.permission` says (default `manage-media`). If your user model cannot
-answer `can()` — no authorization package installed — every authenticated user is
-allowed, so the library still works out of the box.
-
-**Routes are opt-out.** Set `media.routes.register` to `false` to keep the
-Livewire components (the picker in particular) without mounting any routes.
-
-## Requirements
-
-- PHP `^8.2`, Laravel `^12|^13`
-- `livewire/livewire ^4`, `livewire/flux ^2`
-- `spatie/laravel-medialibrary`, `spatie/image`, `spatie/laravel-query-builder`
-- `livewire-filemanager/filemanager` — supplies the `Folder` model this package
-  builds its hierarchy on
-
-## Installation
+layouts, no dependency on any particular user package.
 
 ```bash
-composer require kreetancraft/laravel-media
-```
-```bash
+composer require kreetancraft/laravel-media-manager
 php artisan vendor:publish --tag=media-config
-```
-```bash
 php artisan migrate
 ```
 
-Then point the layout at your own:
+Point it at your layout and you're done:
 
 ```php
 // config/media.php
 'layouts' => ['admin' => 'components.layouts.app'],
 ```
 
-## Usage
+## Documentation
 
-The gallery lives at `/admin/media` by default. To embed the picker in a form:
+| | |
+|---|---|
+| [Getting started](docs/getting-started.md) | Install, routes, components, the one gotcha |
+| [Attaching media to your models](docs/attaching-media.md) | The trait, collections, the picker, uploads, URLs |
+| [Configuration reference](docs/configuration.md) | Every key, and why it exists |
+| [Extending and replacing behaviour](docs/extending.md) | Contracts, the avatar hook, publishing views |
 
-```blade
-<livewire:media.picker wire:model="imageId" collection="featured" />
-```
+## Features
 
-Attach media to any model with the trait:
+**Library** — folder hierarchy with breadcrumbs, drag-free move between folders,
+bulk select and delete, filter by upload month, search.
 
-```php
-use Kreetancraft\Media\Concerns\HasMediaAttachments;
+**Picker** — `<livewire:media.picker wire:model="imageId" />` in any form. Browse,
+upload, pick, done.
 
-class Article extends Model
-{
-    use HasMediaAttachments;
-}
-```
-```php
-$article->attachMedia($mediaId, 'gallery');
-$article->attachedMedia('gallery');   // Collection<Media>
-$article->featuredUrl();
-```
+**Editor** — crop, rotate, flip, brightness, contrast. Saves a WebP variant over
+the auto conversion so serving keeps working.
 
-**Eager load it.** `attachedMedia()` falls back to a query when the relation is
-not loaded, and because it calls the relation as a *method*, Laravel's
-`preventLazyLoading()` cannot see it — which is exactly how a family of N+1s once
-went unnoticed. Always:
+**Attachments** — a many-to-many link, unlike Spatie's 1:1 ownership. One image
+can belong to many models; deleting a model drops its attachments and keeps the
+shared file.
 
 ```php
-Article::with('mediaAttachments.media')->get();
+$article->attachMedia($id, 'gallery');
+$article->attachedMedia('gallery');   // Collection<Media>, sorted
+$article->featuredUrl('webp');        // ?string
+$article->syncAttachedMedia([$a, $b], 'gallery');
 ```
 
-Set `media.warn_on_lazy_attachments` to `true` in development and the package
-will log the ones you miss.
+**WebP** — every upload gets a variant, queued. `media:reconvert-webp` backfills
+an existing library.
 
-## Configuration
+**Public serving** — `/assets/{path}` serves files by exact folder path,
+WordPress-style, with no enumerable listing surface.
 
-`config/media.php`:
+## Design decisions worth knowing
 
-```php
-'permission' => 'manage-media',
+**It ships no CSS and no layouts.** Screens render into *your* layout and inherit
+your Tailwind + Flux theme.
 
-'layouts' => ['admin' => 'components.layouts.app'],
+**It does not care which user model you have.** Uploaders resolve through
+`config('auth.providers.users.model')`; `MediaPolicy` type-hints
+`Authenticatable`.
 
-'routes' => [
-    'register'   => true,
-    'prefix'     => 'admin',
-    'middleware' => ['web', 'auth'],
-    'names'      => ['index' => 'admin.media', 'edit' => 'admin.media.edit',
-                     'asset' => 'media.asset',  'home' => '/'],
-],
+**It names no permission of its own.** `MediaPolicy` checks whatever
+`media.permission` says. With no authorization package installed, any
+authenticated user is allowed — the library works on a bare Laravel install
+rather than failing closed on a dependency you never asked for.
 
-// Enforced twice on purpose: as validation rules so the user gets a real error,
-// and again inside UploadMediaAction so a caller that skips validation cannot
-// write an arbitrary file type.
-'uploads' => [
-    'max_size_kb'        => 10240,
-    'allowed_extensions' => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', /* … */],
-    'allowed_mimes'      => ['image/jpeg', 'image/png', /* … */],
-],
+**Routes are two independent switches.** Serve public assets while replacing the
+admin UI, or the reverse.
 
-// The editor payload arrives from the browser. Zoom in particular must be
-// capped: an unbounded scale on a large source is a one-request memory
-// exhaustion.
-'editor' => ['max_zoom' => 4.0, 'min_zoom' => 0.1, 'max_dimension' => 6000],
+## Requirements
 
-'webp' => ['enabled' => true, 'queue' => null, 'quality' => 85, 'max_width' => 2400],
-```
-
-## Commands
-
-```bash
-php artisan media:reconvert-webp
-```
-Queues WebP conversion for library items missing a variant. Streams with
-`cursor()` rather than loading the table.
+- PHP `^8.2`, Laravel `^12|^13`
+- `livewire/livewire ^4`, `livewire/flux ^2`
+- `spatie/laravel-medialibrary`, `spatie/image`, `spatie/laravel-query-builder`
+- `livewire-filemanager/filemanager` — supplies the `Folder` model the hierarchy
+  is built on
 
 ## Testing
 
@@ -136,9 +88,9 @@ Queues WebP conversion for library items missing a variant. Streams with
 vendor/bin/pest
 ```
 
-Runs against `orchestra/testbench` on in-memory SQLite. `tests/fixtures` supplies
-the host application's user model, layout and routes, since this package ships
-none of them.
+87 tests against `orchestra/testbench` on in-memory SQLite. `tests/fixtures`
+supplies the host application's user model, layout and routes, since this
+package deliberately ships none of them.
 
 ## License
 
