@@ -1,8 +1,10 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Kreetancraft\Media\Models\MediaAttachment;
 use Kreetancraft\Media\Policies\MediaPolicy;
 use Kreetancraft\Media\Tests\Fixtures\Models\User;
 use Kreetancraft\Media\Tests\TestCase;
@@ -92,4 +94,35 @@ function storeFile(Folder $folder, string $name, string $mime = 'image/jpeg'): M
     $stored = Storage::disk('public')->putFileAs('tmp', $upload, $name);
 
     return $folder->addMedia(Storage::disk('public')->path($stored))->toMediaCollection('medialibrary');
+}
+
+/**
+ * A stored media row, for tests that only need something attachable.
+ */
+function makeMedia(string $name = 'image.jpg'): Media
+{
+    static $n = 0;
+    $n++;
+
+    return storeFile(home(), $n.'-'.$name);
+}
+
+/**
+ * Attach a fresh media row to any model, without the model using the trait.
+ */
+function attachMediaTo(
+    Model $model,
+    string $collection = 'default',
+): Media {
+    $media = makeMedia();
+
+    MediaAttachment::create([
+        'attachable_type' => $model->getMorphClass(),
+        'attachable_id' => $model->getKey(),
+        'media_id' => $media->id,
+        'collection_name' => $collection,
+        'sort_order' => 0,
+    ]);
+
+    return $media;
 }

@@ -70,6 +70,26 @@ Skipping it fails confusingly rather than loudly — classes shared with your ow
 views still work and only the ones unique to this package go missing, which
 typically shows up as a light filter bar on a dark page.
 
+## Supplying images to other packages
+
+`kreetancraft/laravel-seo` and `kreetancraft/laravel-blog` ship no image handling on purpose: a
+PHP class cannot conditionally `use` a trait, so pulling this package's trait into their models
+would make it a hard dependency and a missing one a fatal error. They ask a configured resolver
+instead — point it here and images appear:
+
+```php
+// config/blog.php  and  config/seo.php
+'image_resolver' => \Kreetancraft\Media\Support\MediaImageResolver::class,
+```
+
+Neither package declares a dependency on this one, and this one declares none on them. The
+resolver reads `media_attachments` polymorphically, so **the calling model does not need
+`HasMediaAttachments`** — that is what lets another package's models resolve images without
+inheriting anything from here.
+
+It also exposes `preload()`, which those packages call once per page. Resolving per model is an
+N+1 by construction, and preloading is what buys back what a real relation would have given.
+
 ## Design decisions worth knowing
 
 **It ships no CSS and no layouts.** Screens render into *your* layout and inherit
