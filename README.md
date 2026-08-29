@@ -104,6 +104,20 @@ inheriting anything from here.
 It also exposes `preload()`, which those packages call once per page. Resolving per model is an
 N+1 by construction, and preloading is what buys back what a real relation would have given.
 
+### The three views this package offers
+
+| | |
+|---|---|
+| `media::picker-field` | Tiles, a **Choose** button and the modal. The field for an admin form. |
+| `media::picker-modal` | The modal alone, for a caller that has its own trigger — the blog editor's toolbar button opens this one. Nothing visible is added to the page. |
+| `media.avatar-uploader` | A Livewire component that uploads one image without opening the library. |
+
+The first two take `$items`, `$group`, `$multiple`. All three dispatch the same `media-picked`
+event, so a consumer does not care which is in use.
+
+A view that does not exist is simply not included by the packages that name it, so being on an
+older version of this package gives an inert control rather than a broken page.
+
 ### Letting people set their own picture
 
 The picker browses the whole library and is gated on `viewAny` for media. That is right for an
