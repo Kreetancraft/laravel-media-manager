@@ -100,3 +100,28 @@ it('removes the image again', function (): void {
 
     expect((new MediaImageResolver)->urlFor($user->fresh(), 'avatar'))->toBeNull();
 });
+
+it('gives the file input a real label to click', function (): void {
+    // Upload and Replace both did nothing: the trigger was a flux:button with
+    // as="label" and a `for`, which renders a <button> — and `for` means
+    // nothing on a button. A <label> wrapping the input needs no `for` at all.
+    $user = User::create(['name' => 'Me', 'email' => 'markup@example.com', 'password' => 'x']);
+    $this->actingAs($user);
+
+    $html = Livewire::test(AvatarUploader::class, ['model' => $user])->html();
+
+    expect($html)->toMatch('/<label[^>]*>.*?<input[^>]+type="file"/s');
+});
+
+it('offers Replace once an image is set, and Upload before', function (): void {
+    $user = User::create(['name' => 'Me', 'email' => 'labels@example.com', 'password' => 'x']);
+    $this->actingAs($user);
+
+    $before = Livewire::test(AvatarUploader::class, ['model' => $user]);
+    expect($before->html())->toContain('Upload')->not->toContain('Replace');
+
+    $before->set('upload', UploadedFile::fake()->image('face.jpg'));
+
+    $after = Livewire::test(AvatarUploader::class, ['model' => $user->fresh()]);
+    expect($after->html())->toContain('Replace');
+});
