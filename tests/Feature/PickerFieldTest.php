@@ -59,3 +59,26 @@ it('scopes its modal to the group, so two fields on one form do not collide', fu
         ->and($og)->toContain('media-picker-seo-og')
         ->and($featured)->not->toContain('media-picker-seo-og');
 });
+
+it('renders only the modal when there is no trigger', function (): void {
+    // The rich text editor opens the picker from its own toolbar button. A
+    // Choose card sitting below the form would do nothing when clicked.
+    $html = Blade::render(
+        "@include('media::picker-field', ['items' => [], 'group' => 'rich-text-image', 'trigger' => false])"
+    );
+
+    expect($html)->toContain('media-picker-rich-text-image')
+        ->and($html)->not->toContain('Choose');
+});
+
+it('still shows chosen images when there is no trigger... by not showing them', function (): void {
+    // With trigger => false nothing visible renders at all, tiles included:
+    // the caller is mounting a modal, not displaying a field.
+    $html = Blade::render(
+        "@include('media::picker-field', ['items' => \$items, 'group' => 'rich-text-image', 'trigger' => false])",
+        ['items' => [['id' => 1, 'url' => '/storage/a.jpg', 'name' => 'a.jpg']]],
+    );
+
+    expect($html)->not->toContain('/storage/a.jpg')
+        ->and($html)->toContain('media-picker-rich-text-image');
+});

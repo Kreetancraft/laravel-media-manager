@@ -6,6 +6,7 @@
     'emptyLabel' => null,
     'icon' => 'photo',
     'mimeType' => null,
+    'trigger' => true,
 ])
 
 {{--
@@ -28,6 +29,14 @@
     `media-picked` with ids, group and items — the shape those packages listen
     for. There is no remove button by design: picking again replaces the
     selection, which is one interaction instead of two.
+
+    `trigger => false` renders the modal and nothing visible. That is for a
+    caller that opens the picker some other way — the rich text editor's toolbar
+    button calls Flux.modal('media-picker-rich-text-image').show() — and would
+    otherwise get an unlabelled Choose card sitting on the page doing nothing.
+
+    A view of your own named by `media_picker_view` must honour this prop, or it
+    will draw a field where only a modal was asked for.
 --}}
 @php
     $pickerParams = ['group' => $group, 'multiple' => $multiple];
@@ -37,6 +46,7 @@
     }
 @endphp
 
+@if ($trigger)
 <div class="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50/40 p-4 transition-all duration-200 focus-within:border-zinc-400 dark:border-zinc-800/60 dark:bg-zinc-900/20 dark:focus-within:border-zinc-700">
     @if ($label)
         <div class="flex items-center justify-between">
@@ -83,11 +93,15 @@
     @if (empty($items) && $emptyLabel)
         <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">{{ $emptyLabel }}</flux:text>
     @endif
-
-    {{-- @livewire() rather than the :bindings shorthand: the shorthand does not
-         resolve inside a nested Blade component, and the params have to be
-         evaluated in this scope. --}}
-    <flux:modal name="media-picker-{{ $group }}" class="max-w-6xl">
-        @livewire('media.picker', $pickerParams, key('picker-'.$group))
-    </flux:modal>
 </div>
+@endif
+
+{{-- Always rendered, trigger or not: something has to hold the picker, and with
+     trigger => false this is the whole point of including the view.
+
+     @livewire() rather than the :bindings shorthand: the shorthand does not
+     resolve inside a nested Blade component, and the params have to be
+     evaluated in this scope. --}}
+<flux:modal name="media-picker-{{ $group }}" class="max-w-6xl">
+    @livewire('media.picker', $pickerParams, key('picker-'.$group))
+</flux:modal>
