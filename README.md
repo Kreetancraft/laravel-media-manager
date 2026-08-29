@@ -82,6 +82,20 @@ instead — point it here and images appear:
 'image_resolver' => \Kreetancraft\Media\Support\MediaImageResolver::class,
 ```
 
+It also ships the field itself, so nobody has to write a picker before they can attach an image:
+
+```php
+// config/blog.php
+'media_picker_view' => 'media::picker-field',
+
+// config/seo.php
+'og_picker_view' => 'media::picker-field',
+```
+
+That renders the chosen tiles, a **Choose** button and the picker modal, scoped to the `group` it
+is given so two fields on one form cannot collide. It dispatches `media-picked` with ids, group
+and items — the event those packages already listen for.
+
 Neither package declares a dependency on this one, and this one declares none on them. The
 resolver reads `media_attachments` polymorphically, so **the calling model does not need
 `HasMediaAttachments`** — that is what lets another package's models resolve images without
