@@ -104,6 +104,30 @@ inheriting anything from here.
 It also exposes `preload()`, which those packages call once per page. Resolving per model is an
 N+1 by construction, and preloading is what buys back what a real relation would have given.
 
+### Letting people set their own picture
+
+The picker browses the whole library and is gated on `viewAny` for media. That is right for an
+admin attaching a featured image and wrong for a profile page: someone changing their own picture
+should not be shown everyone else's files, nor need a permission over the library to do it.
+
+`media.avatar-uploader` asks for a file and nothing else:
+
+```blade
+<livewire:media.avatar-uploader :model="auth()->user()" />
+```
+
+Authorization follows the **subject**, not the library — you may always set your own, and setting
+someone else's is `update` on them. No media permission is involved either way.
+
+kreetancraft/laravel-user-management uses it automatically when you name it:
+
+```php
+// config/user-management.php
+'avatar_uploader' => 'media.avatar-uploader',
+```
+
+Its profile component then uploads, while the admin user forms keep the library chooser.
+
 ## Design decisions worth knowing
 
 **It ships no CSS and no layouts.** Screens render into *your* layout and inherit

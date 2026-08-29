@@ -12,6 +12,7 @@ use Kreetancraft\Media\Contracts\FolderContract;
 use Kreetancraft\Media\Contracts\MediaContract;
 use Kreetancraft\Media\Contracts\MediaItemsContract;
 use Kreetancraft\Media\Listeners\DispatchWebpConversion;
+use Kreetancraft\Media\Livewire\AvatarUploader;
 use Kreetancraft\Media\Livewire\MediaDetails;
 use Kreetancraft\Media\Livewire\MediaEditor;
 use Kreetancraft\Media\Livewire\MediaGallery;
@@ -49,6 +50,7 @@ class MediaServiceProvider extends ServiceProvider
         Event::listen(MediaHasBeenAddedEvent::class, DispatchWebpConversion::class);
 
         Livewire::component('media.picker', MediaPicker::class);
+        Livewire::component('media.avatar-uploader', AvatarUploader::class);
         Livewire::component('media.gallery', MediaGallery::class);
         Livewire::component('media.details', MediaDetails::class);
         Livewire::component('media.editor', MediaEditor::class);

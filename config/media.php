@@ -35,6 +35,10 @@ return [
     'avatar' => [
         'collection' => 'avatar',
         'conversion' => null,
+
+        // Folder an uploaded avatar is stored in, by name. Null, or a name that
+        // does not exist, stores it at the library root.
+        'folder' => null,
     ],
 
     /*
