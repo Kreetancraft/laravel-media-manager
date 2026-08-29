@@ -82,3 +82,30 @@ it('still shows chosen images when there is no trigger... by not showing them', 
     expect($html)->not->toContain('/storage/a.jpg')
         ->and($html)->toContain('media-picker-rich-text-image');
 });
+
+it('ships a modal-only view for callers with their own trigger', function (): void {
+    // A separate view rather than a flag, because the packages that include it
+    // do not depend on this one: with a flag, an older copy of this package
+    // drew a Choose card mid-page and no version constraint could stop it.
+    $html = Blade::render("@include('media::picker-modal', ['group' => 'rich-text-image'])");
+
+    expect($html)->toContain('media-picker-rich-text-image')
+        ->and($html)->not->toContain('Choose');
+});
+
+it('scopes the modal-only view to its group too', function (): void {
+    $a = Blade::render("@include('media::picker-modal', ['group' => 'one'])");
+    $b = Blade::render("@include('media::picker-modal', ['group' => 'two'])");
+
+    expect($a)->toContain('media-picker-one')
+        ->and($a)->not->toContain('media-picker-two')
+        ->and($b)->toContain('media-picker-two');
+});
+
+it('is simply not included when this package is absent', function (): void {
+    // The whole point of a separate view: @includeIf on a missing view renders
+    // nothing, so an older install gets an inert button rather than a card.
+    $html = Blade::render("@includeIf('media::picker-modal-that-does-not-exist', ['group' => 'x'])");
+
+    expect(trim($html))->toBe('');
+});

@@ -28,7 +28,10 @@ it('resolves images for a model that does not use the trait', function (): void 
 
     $media = attachMediaTo($article, 'featured');
 
-    expect($this->resolver->urlFor($article, 'featured'))->toContain((string) $media->id);
+    // Assert on the file, not the id: the two only matched while the fixture
+    // counter happened to track the primary key, which another test file
+    // advancing that counter quietly broke.
+    expect($this->resolver->urlFor($article, 'featured'))->toContain($media->file_name);
 });
 
 it('returns null for a collection with nothing in it', function (): void {

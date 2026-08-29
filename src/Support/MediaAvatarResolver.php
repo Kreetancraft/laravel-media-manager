@@ -18,9 +18,16 @@ use Kreetancraft\Media\Concerns\HasMediaAttachments;
  * Nothing else changes, and neither package declares a dependency on the other.
  * There is no framework registry for "who provides avatars" the way
  * Gate::policies() serves permissions, so this seam has to be named explicitly.
+ *
+ * Reading was all this did until 0.8.0, which made the seam useless in practice:
+ * an avatar could be displayed but nothing could set one, so the user forms had
+ * no image option and no way to gain one. listFor() and syncFor() are the other
+ * half, and they are what the avatar field on those forms saves through.
  */
 class MediaAvatarResolver
 {
+    public function __construct(private readonly MediaImageResolver $images = new MediaImageResolver) {}
+
     public function __invoke(Model $user): ?string
     {
         return $this->avatarFor($user);
@@ -28,15 +35,41 @@ class MediaAvatarResolver
 
     public function avatarFor(Model $user): ?string
     {
-        // The host's user model has to opt in by using the trait; without it
-        // there is no attachment relation to read.
-        if (! in_array(HasMediaAttachments::class, class_uses_recursive($user), true)) {
-            return null;
+        // With the trait, go through it: it is the only path that honours
+        // `media.avatar.conversion`, and a host using it expects that.
+        if (in_array(HasMediaAttachments::class, class_uses_recursive($user), true)) {
+            return $user->attachedUrl($this->collection(), config('media.avatar.conversion'));
         }
 
-        $collection = (string) config('media.avatar.collection', 'avatar');
-        $conversion = config('media.avatar.conversion');
+        // Without it, read the attachments directly. Requiring the trait meant
+        // an application whose User model this package does not own could never
+        // have an avatar at all.
+        return $this->images->urlFor($user, $this->collection());
+    }
 
-        return $user->attachedUrl($collection, $conversion);
+    /**
+     * The avatar, shaped for a picker. Zero or one entry — an avatar is single.
+     *
+     * @return list<array{id: int, url: ?string, name: ?string}>
+     */
+    public function listFor(Model $user, ?string $collection = null): array
+    {
+        return $this->images->listFor($user, $collection ?? $this->collection());
+    }
+
+    /**
+     * Set or clear the avatar. An empty list removes it.
+     *
+     * @param  list<int|string>  $ids
+     */
+    public function syncFor(Model $user, string $collection, array $ids): void
+    {
+        // Only ever one avatar, whatever the picker sends.
+        $this->images->syncFor($user, $collection ?: $this->collection(), array_slice($ids, 0, 1));
+    }
+
+    private function collection(): string
+    {
+        return (string) config('media.avatar.collection', 'avatar');
     }
 }
